@@ -2,7 +2,7 @@ class Resolvers::UpdateArticle < Resolvers::MutationFunction
   # arguments passed as "args"
   argument :id, !types.ID
   argument :title, types.String
-  argument :section_id, types.Int
+  argument :section_id, types[!types.Int]
   argument :content, types.String
   argument :summary, types.String
   argument :created_at, types.String
@@ -41,6 +41,13 @@ class Resolvers::UpdateArticle < Resolvers::MutationFunction
       @article.volume = args["volume"] if args["volume"]
       @article.issue = args["issue"] if args["issue"]
       @article.is_published = args["is_published"] if args["is_published"]
+
+      if args["section_id"]
+        @article.section.clear
+        args["section_id"].each do |section|
+          @article.section.build(section_id: section_id)
+        end
+      end
 
       if args["outquotes"]
         @article.outquotes.clear
